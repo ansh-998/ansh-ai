@@ -8,15 +8,35 @@ export default function Contact() {
   const [email, setEmail]     = useState('')
   const [message, setMessage] = useState('')
   const [sent, setSent]       = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError]     = useState('')
 
   const canSubmit = name.trim() && email.trim() && message.trim()
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit) return
-    const subject = encodeURIComponent(`Portfolio enquiry from ${name}`)
-    const body    = encodeURIComponent(`Hi Ansh,\n\n${message}\n\n— ${name}\n${email}`)
-    window.open(`mailto:${profile.email}?subject=${subject}&body=${body}`)
-    setSent(true)
+    setLoading(true)
+    setError('')
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message })
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message')
+      }
+      
+      setSent(true)
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -113,12 +133,12 @@ export default function Contact() {
           {sent ? (
             <div className="flex flex-col items-center justify-center py-6 gap-3 text-center">
               <CheckCircle size={28} className="text-[var(--accent)]" />
-              <p className="text-[13px] text-slate-300 font-medium">Email client opened!</p>
+              <p className="text-[13px] text-slate-300 font-medium">Message sent successfully!</p>
               <p className="text-[12px] text-slate-500">
-                Your default email app should have opened with the message pre-filled.
+                Thanks for reaching out, Ansh will get back to you shortly.
               </p>
               <button
-                onClick={() => { setSent(false); setName(''); setEmail(''); setMessage('') }}
+                onClick={() => { setSent(false); setName(''); setEmail(''); setMessage(''); setError('') }}
                 className="text-[12px] text-[var(--accent)] hover:underline mt-1"
               >
                 Send another
@@ -132,14 +152,16 @@ export default function Contact() {
                   placeholder="Your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2.5 text-[13px] text-slate-200 placeholder-slate-600 outline-none focus:border-[var(--accent)]/40 transition-colors w-full"
+                  disabled={loading}
+                  className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2.5 text-[13px] text-slate-200 placeholder-slate-600 outline-none focus:border-[var(--accent)]/40 transition-colors w-full disabled:opacity-50"
                 />
                 <input
                   type="email"
                   placeholder="Your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2.5 text-[13px] text-slate-200 placeholder-slate-600 outline-none focus:border-[var(--accent)]/40 transition-colors w-full"
+                  disabled={loading}
+                  className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2.5 text-[13px] text-slate-200 placeholder-slate-600 outline-none focus:border-[var(--accent)]/40 transition-colors w-full disabled:opacity-50"
                 />
               </div>
               <textarea
@@ -147,18 +169,22 @@ export default function Contact() {
                 rows={4}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2.5 text-[13px] text-slate-200 placeholder-slate-600 outline-none focus:border-[var(--accent)]/40 transition-colors resize-none"
+                disabled={loading}
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3.5 py-2.5 text-[13px] text-slate-200 placeholder-slate-600 outline-none focus:border-[var(--accent)]/40 transition-colors resize-none disabled:opacity-50"
               />
+              
+              {error && <p className="text-red-400 text-[12px]">{error}</p>}
+              
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleSubmit}
-                  disabled={!canSubmit}
+                  disabled={!canSubmit || loading}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--accent)] text-white text-[13px] font-medium hover:bg-[var(--accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
-                  <Send size={12} />
-                  Send via email
+                  <Send size={12} className={loading ? 'opacity-50' : ''} />
+                  {loading ? 'Sending...' : 'Send Message'}
                 </button>
-                <p className="text-[11px] text-slate-600">Opens your email client pre-filled.</p>
+                <p className="text-[11px] text-slate-600">Sends directly to Ansh's inbox.</p>
               </div>
             </div>
           )}
