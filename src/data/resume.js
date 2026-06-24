@@ -54,7 +54,7 @@ export const projects = [
     tagline: 'Travel CRM & Booking Portalr',
     description:
       'Trip Desk is a full-stack platform built for slow-travel companies that need more than a spreadsheet to run their business. The public side lets travellers discover trips, explore photo galleries, and submit enquiries that land straight into the CRM. The admin side gives the sales team a live lead pipeline, per-lead call logs, and AI-generated WhatsApp outreach drafts — all powered by Gemini. Role-based auth separates the team dashboard from traveller accounts. Built with Next.js 16, Supabase, TypeScript, and Tailwind CSS v4, with row-level security enforced at the database layer and schema-first Zod validation shared across client and server.',
-    tech: ['Next.js 16', 'Redux Toolkit', 'Tailwind CSS', 'RapidAPI', 'JavaScript'],
+    tech: ['Next.js 16', 'TypeScript', ' Tailwind CSS v4', 'RapidAPI', 'JavaScript'],
     live: 'https://ai-summarizer-master.vercel.app/',
     github: 'https://github.com/ansh-998/ai-summarizer-master',
     highlight: false,
