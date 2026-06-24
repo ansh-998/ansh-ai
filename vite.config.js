@@ -4,6 +4,15 @@ import fs from 'fs'
 import path from 'path'
 import { PRIMARY_MODEL, FALLBACK_MODEL, SYSTEM_PROMPT } from './api/_config.js'
 
+/**
+ * Local API Dev Server Middleware
+ * 
+ * Vite acts as a frontend-only development server and does not run Vercel serverless functions by default.
+ * This plugin attaches Connect middleware to intercept local POST requests to '/api/chat',
+ * reads the local '.env' file for the API key, and calls the Google Gemini API directly.
+ * 
+ * This enables a zero-setup local development experience for AI features identical to production.
+ */
 function localApiPlugin() {
   return {
     name: 'local-api-handler',
