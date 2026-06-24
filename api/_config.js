@@ -39,10 +39,10 @@ PROJECTS:
    • Responsive UI with loading/error states and Redux Toolkit state management
 
 SKILLS:
-• Frontend: JavaScript (ES6+), ReactJS, React Router, Redux, Redux Toolkit, Tailwind CSS, Material UI
+• Frontend: Next.js 16, TypeScript, JavaScript (ES6+), ReactJS, React Router, Redux, Redux Toolkit, Tailwind CSS v4, Material UI
 • Backend: Node.js, Express.js, RESTful APIs, JWT Authentication
-• Database: MongoDB (Mongoose), SQL Server
-• Tools: Git, GitHub, Postman, Axios, Puppeteer, pdf-parse, Netlify, Render, VS Code
+• Database: MongoDB (Mongoose), Supabase, SQL Server
+• Tools: Gemini 2.5 Flash, Zod, Vercel, Git, GitHub, Postman, Axios, Puppeteer, pdf-parse, Netlify, Render, VS Code
 • Concepts: MVC Architecture, State Management (Redux Toolkit), Role-Based Access Control
 
 RESPONSE RULES:
