@@ -2,6 +2,8 @@
 
 An AI-powered portfolio where visitors chat with a Gemini-powered assistant that knows your entire resume. Built with React + Vite + Tailwind CSS + Vercel serverless functions.
 
+try here - "https://ansh-ai-olive.vercel.app/"
+
 ---
 
 ## Local Setup
