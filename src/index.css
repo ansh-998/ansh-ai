@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Custom Theme System ────────────────────────────────────────── */
+:root {
+  /* Default: Emerald Theme */
+  --accent: #10b981;
+  --accent-hover: #34d399;
+  --accent-glow: rgba(16, 185, 129, 0.12);
+  --accent-border: rgba(16, 185, 129, 0.22);
+  --accent-rgb: 16, 185, 129;
+}
+
+.theme-sapphire {
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-glow: rgba(59, 130, 246, 0.12);
+  --accent-border: rgba(59, 130, 246, 0.22);
+  --accent-rgb: 59, 130, 246;
+}
+
+.theme-amethyst {
+  --accent: #a855f7;
+  --accent-hover: #c084fc;
+  --accent-glow: rgba(168, 85, 247, 0.12);
+  --accent-border: rgba(168, 85, 247, 0.22);
+  --accent-rgb: 168, 85, 247;
+}
+
+/* Apply variables to Tailwind text, borders, backgrounds dynamically */
+.text-accent { color: var(--accent); }
+.text-accent-hover { color: var(--accent-hover); }
+.border-accent-glow { border-color: var(--accent-border); }
+.bg-accent-glow { background-color: var(--accent-glow); }
+.hover-bg-accent:hover { background-color: var(--accent-glow); border-color: var(--accent-border); color: var(--accent-hover); }
+
+/* ── Fonts & Base ───────────────────────────────────────────────── */
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background-color: #080810;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease;
+  }
+
+  ::-webkit-scrollbar       { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 999px; }
+}
+
+/* ── Typing indicator ───────────────────────────────────────────── */
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0);   opacity: 0.35; }
+  30%            { transform: translateY(-5px); opacity: 1;    }
+}
+
+.typing-dot                    { animation: typingBounce 1.3s ease-in-out infinite; }
+.typing-dot:nth-child(2)       { animation-delay: 0.15s; }
+.typing-dot:nth-child(3)       { animation-delay: 0.30s; }
+
+/* ── Pulsing glow for active indicators ────────────────────────── */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.3; }
+}
+
+.pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+
+/* ── Text Gradients ─────────────────────────────────────────────── */
+.text-gradient-animated {
+  background: linear-gradient(to right, var(--accent), #6366f1, var(--accent));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShine 4s linear infinite;
+}
+
+@keyframes gradientShine {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ── Scroll Reveal ─────────────────────────────────────────────── */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Card Glow Layer ────────────────────────────────────────────── */
+.glow-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    rgba(var(--accent-rgb), 0.06),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.glow-card:hover .glow-overlay {
+  opacity: 1;
+}
+
+/* Helper styles */
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
