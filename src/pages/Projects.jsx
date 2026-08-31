@@ -1,5 +1,6 @@
 // src/pages/Projects.jsx
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Code2 } from 'lucide-react'
 import { projects } from '../data/resume.js'
 import ProjectCard from '../components/UI/ProjectCard.jsx'
@@ -7,28 +8,31 @@ import RevealWrapper from '../components/UI/RevealWrapper.jsx'
 
 export default function Projects() {
   const [highlightedId, setHighlightedId] = useState(null)
+  const location = useLocation()
 
   useEffect(() => {
-    const hash = window.location.hash
+    const hash = location.hash || window.location.hash
     if (hash) {
       const id = hash.replace('#', '').toLowerCase()
       setHighlightedId(id)
 
-      // Scroll to element after a short delay for mount
-      setTimeout(() => {
+      const scrollTimer = setTimeout(() => {
         const el = document.getElementById(id)
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
-      }, 400)
+      }, 150)
 
-      const timer = setTimeout(() => {
+      const unhighlightTimer = setTimeout(() => {
         setHighlightedId(null)
       }, 3000)
 
-      return () => clearTimeout(timer)
+      return () => {
+        clearTimeout(scrollTimer)
+        clearTimeout(unhighlightTimer)
+      }
     }
-  }, [])
+  }, [location.hash])
 
   return (
     <div className="h-full overflow-y-auto">

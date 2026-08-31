@@ -5,20 +5,33 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { PRIMARY_MODEL, FALLBACK_MODEL, SYSTEM_PROMPT } from './_config.js'
+import { checkRateLimit } from './_rateLimit.js'
+import { validateAndCleanOrigin } from './_security.js'
+
+const MAX_MESSAGE_LENGTH = 1000
+const MAX_HISTORY_ITEMS = 10
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  // CORS Security Check
+  if (!validateAndCleanOrigin(req, res)) return
 
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+
+  // Server-side Rate Limiting (10 requests per 1 minute per IP)
+  if (!checkRateLimit(req, res, { windowMs: 60 * 1000, maxRequests: 10 })) return
 
   const { message, history = [] } = req.body ?? {}
 
   if (!message || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'message is required' })
+  }
+
+  const trimmedMessage = message.trim()
+  if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
+    return res.status(400).json({
+      error: `Message exceeds maximum allowed length of ${MAX_MESSAGE_LENGTH} characters.`,
+    })
   }
 
   const apiKey = process.env.GEMINI_API_KEY
@@ -27,16 +40,18 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Server configuration error' })
   }
 
-  // Build Gemini-format conversation from history + new message
-  const contents = [
-    ...history
-      .filter((m) => m.role && m.content)
-      .map((m) => ({
-        role: m.role === 'user' ? 'user' : 'model',
-        parts: [{ text: String(m.content) }],
-      })),
-    { role: 'user', parts: [{ text: message.trim() }] },
-  ]
+  // Validate and restrict chat history payload (last 10 messages, max 1000 chars per msg)
+  const safeHistory = Array.isArray(history)
+    ? history
+        .slice(-MAX_HISTORY_ITEMS)
+        .filter((m) => m && m.role && typeof m.content === 'string')
+        .map((m) => ({
+          role: m.role === 'user' ? 'user' : 'model',
+          parts: [{ text: String(m.content).slice(0, MAX_MESSAGE_LENGTH) }],
+        }))
+    : []
+
+  const contents = [...safeHistory, { role: 'user', parts: [{ text: trimmedMessage }] }]
 
   const makeGeminiRequest = async (modelName) => {
     const response = await fetch(

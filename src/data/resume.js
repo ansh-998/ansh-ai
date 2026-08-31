@@ -6,8 +6,6 @@ export const profile = {
   subtitle: 'MERN Stack · AI Integrations',
   location: 'Noida, India',
   email: 'anshgangwar998@gmail.com',
-  phone: '+91 8979812787',
- 
   github: 'https://github.com/ansh-998',
   linkedin: 'https://www.linkedin.com/in/ansh-gangwar/',
   summary:
@@ -19,7 +17,6 @@ export const skills = {
   backend: ['Node.js', 'Express.js', 'RESTful APIs', 'JWT Authentication'],
   database: ['MongoDB (Mongoose)', 'Supabase', 'SQL Server'],
   tools: ['Google Gemini API', 'Zod', 'Vercel', 'Git', 'GitHub', 'Postman', 'Axios', 'Puppeteer', 'pdf-parse', 'Netlify', 'Render', 'VS Code'],
-  concepts: ['MVC Architecture', 'State Management (Redux Toolkit)', 'Role-Based Access Control'],
 }
 
 export const experience = [
@@ -52,7 +49,7 @@ export const projects = [
   {
     id: 'tripdesk',
     name: 'Trip-Desk',
-    tagline: 'Travel CRM & Booking Portalr',
+    tagline: 'Travel CRM & Booking Portal',
     description:
       'Trip Desk is a full-stack platform built for slow-travel companies that need more than a spreadsheet to run their business. The public side lets travellers discover trips, explore photo galleries, and submit enquiries that land straight into the CRM. The admin side gives the sales team a live lead pipeline, per-lead call logs, and AI-generated WhatsApp outreach drafts — all powered by Gemini. Role-based auth separates the team dashboard from traveller accounts. Built with Next.js 16, Supabase, TypeScript, and Tailwind CSS v4, with row-level security enforced at the database layer and schema-first Zod validation shared across client and server.',
     tech: ['Next.js 16', 'TypeScript', ' Tailwind CSS v4', 'Supabase', 'Zod', 'Gemini 2.5 Flash', 'Vercel'],

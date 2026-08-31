@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react'
 
 const SESSION_KEY = 'ansh_chat_count'
 const MESSAGE_LIMIT = 15
+const REQUEST_TIMEOUT_MS = 15000
 
 const WELCOME = {
   id: 'welcome',
@@ -56,12 +57,18 @@ export function useChat() {
         .filter((m) => m.id !== 'welcome')
         .map((m) => ({ role: m.role, content: m.content }))
 
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
       try {
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: messageText, history }),
+          signal: controller.signal,
         })
+
+        clearTimeout(timeoutId)
 
         const data = await res.json()
 
@@ -83,12 +90,19 @@ export function useChat() {
         setMessageCount(next)
         sessionStorage.setItem(SESSION_KEY, String(next))
       } catch (err) {
+        clearTimeout(timeoutId)
+        let displayError = err.message
+
+        if (err.name === 'AbortError') {
+          displayError = "The AI is currently resting or taking longer than expected. Please try again in a moment, or get in touch directly via [nav:contact]."
+        } else if (!displayError || displayError.includes('Failed to fetch')) {
+          displayError = "Network connection issue. Please check your internet connection or try again shortly."
+        }
+
         const errMsg = {
           id: `e-${Date.now()}`,
           role: 'assistant',
-          content:
-            err.message ||
-            "Sorry, I'm having trouble right now. Try again in a moment, or explore the Projects and Skills pages!",
+          content: displayError,
           timestamp: Date.now(),
           isError: true,
         }
