@@ -9,7 +9,6 @@ const SKILL_SECTIONS = [
   { label: 'Backend',   key: 'backend',   accent: 'text-accent',      dot: 'bg-accent'      },
   { label: 'Database',  key: 'database',  accent: 'text-violet-400',  dot: 'bg-violet-400'  },
   { label: 'Tools',     key: 'tools',     accent: 'text-amber-400',   dot: 'bg-amber-400'   },
-  { label: 'Concepts',  key: 'concepts',  accent: 'text-rose-400',    dot: 'bg-rose-400'    },
 ]
 
 export default function Skills() {

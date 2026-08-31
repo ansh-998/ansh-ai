@@ -69,15 +69,17 @@ export default function Contact() {
               </div>
               <span className="text-[12px] break-all">{profile.email}</span>
             </a>
-            <a
-              href={`tel:${profile.phone}`}
-              className="flex items-center gap-3 text-slate-400 hover:text-slate-200 transition-colors"
-            >
-              <div className="w-7 h-7 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center flex-shrink-0">
-                <Phone size={12} />
-              </div>
-              <span className="text-[12px]">{profile.phone}</span>
-            </a>
+            {profile.phone && (
+              <a
+                href={`tel:${profile.phone}`}
+                className="flex items-center gap-3 text-slate-400 hover:text-slate-200 transition-colors"
+              >
+                <div className="w-7 h-7 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center flex-shrink-0">
+                  <Phone size={12} />
+                </div>
+                <span className="text-[12px]">{profile.phone}</span>
+              </a>
+            )}
             <div className="flex items-center gap-3 text-slate-600">
               <div className="w-7 h-7 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center flex-shrink-0">
                 <MapPin size={12} />

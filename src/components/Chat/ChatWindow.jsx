@@ -1,5 +1,6 @@
 // src/components/Chat/ChatWindow.jsx
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { Send, Bot, Sparkles } from 'lucide-react'
 import MessageBubble from './MessageBubble.jsx'
 import TypewriterIntro from './TypewriterIntro.jsx'
@@ -124,9 +125,9 @@ export default function ChatWindow() {
         {isLimitReached ? (
           <div className="text-center py-2 text-[12px] text-slate-500">
             Session limit reached.{' '}
-            <a href="/contact" className="text-emerald-400 hover:underline">
+            <Link to="/contact" className="text-emerald-400 hover:underline">
               Get in touch directly
-            </a>{' '}
+            </Link>{' '}
             or open a new tab to reset.
           </div>
         ) : (

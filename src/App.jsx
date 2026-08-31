@@ -5,6 +5,7 @@ import Home      from './pages/Home.jsx'
 import Projects  from './pages/Projects.jsx'
 import Skills    from './pages/Skills.jsx'
 import Contact   from './pages/Contact.jsx'
+import NotFound  from './pages/NotFound.jsx'
 import ParticlesBackground from './components/UI/ParticlesBackground.jsx'
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/projects"  element={<Projects />} />
             <Route path="/skills"    element={<Skills />}   />
             <Route path="/contact"   element={<Contact />}  />
+            <Route path="*"          element={<NotFound />} />
           </Routes>
         </main>
         <MobileNav />
@@ -26,4 +28,3 @@ export default function App() {
     </div>
   )
 }
-

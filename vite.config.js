@@ -4,6 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import nodemailer from 'nodemailer'
 import { PRIMARY_MODEL, FALLBACK_MODEL, SYSTEM_PROMPT } from './api/_config.js'
+import { escapeHtml } from './api/_security.js'
 
 /**
  * Local API Dev Server Middleware
@@ -27,6 +28,21 @@ function localApiPlugin() {
             }
             const { message, history = [] } = JSON.parse(bodyStr)
 
+            if (!message || typeof message !== 'string' || !message.trim()) {
+              res.statusCode = 400
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ error: 'message is required' }))
+              return
+            }
+
+            const trimmedMessage = message.trim()
+            if (trimmedMessage.length > 1000) {
+              res.statusCode = 400
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ error: 'Message exceeds maximum allowed length of 1000 characters.' }))
+              return
+            }
+
             const envPath = path.resolve(process.cwd(), '.env')
             let apiKey = process.env.GEMINI_API_KEY
             if (!apiKey && fs.existsSync(envPath)) {
@@ -42,12 +58,19 @@ function localApiPlugin() {
               return
             }
 
+            const safeHistory = Array.isArray(history)
+              ? history
+                  .slice(-10)
+                  .filter((m) => m && m.role && typeof m.content === 'string')
+                  .map((m) => ({
+                    role: m.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: String(m.content).slice(0, 1000) }],
+                  }))
+              : []
+
             const contents = [
-              ...history.map(m => ({
-                role: m.role === 'user' ? 'user' : 'model',
-                parts: [{ text: String(m.content) }]
-              })),
-              { role: 'user', parts: [{ text: message }] }
+              ...safeHistory,
+              { role: 'user', parts: [{ text: trimmedMessage }] }
             ]
 
             const makeGeminiRequest = async (modelName) => {
@@ -110,10 +133,28 @@ function localApiPlugin() {
             }
             const { name, email, message } = JSON.parse(bodyStr)
 
-            if (!name || !email || !message) {
+            if (!name || typeof name !== 'string' || !email || typeof email !== 'string' || !message || typeof message !== 'string') {
               res.statusCode = 400
               res.setHeader('Content-Type', 'application/json')
               res.end(JSON.stringify({ error: 'Name, email, and message are required.' }))
+              return
+            }
+
+            const cleanName = name.trim()
+            const cleanEmail = email.trim()
+            const cleanMessage = message.trim()
+
+            if (!cleanName || !cleanEmail || !cleanMessage) {
+              res.statusCode = 400
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ error: 'Name, email, and message cannot be empty.' }))
+              return
+            }
+
+            if (cleanName.length > 100 || cleanEmail.length > 100 || cleanMessage.length > 3000) {
+              res.statusCode = 400
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify({ error: 'Input fields exceed allowed character limits.' }))
               return
             }
 
@@ -144,17 +185,21 @@ function localApiPlugin() {
               },
             })
 
+            const safeName = escapeHtml(cleanName)
+            const safeEmail = escapeHtml(cleanEmail)
+            const safeMessage = escapeHtml(cleanMessage)
+
             const mailOptions = {
-              from: `"${name}" <${email}>`,
+              from: `"${safeName}" <${safeEmail}>`,
               to: emailUser,
-              replyTo: email,
-              subject: `Portfolio Enquiry from ${name}`,
-              text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-              html: `<p><strong>Name:</strong> ${name}</p>
-                     <p><strong>Email:</strong> ${email}</p>
+              replyTo: cleanEmail,
+              subject: `Portfolio Enquiry from ${cleanName}`,
+              text: `Name: ${cleanName}\nEmail: ${cleanEmail}\n\nMessage:\n${cleanMessage}`,
+              html: `<p><strong>Name:</strong> ${safeName}</p>
+                     <p><strong>Email:</strong> ${safeEmail}</p>
                      <br/>
                      <p><strong>Message:</strong></p>
-                     <p>${message.replace(/\n/g, '<br/>')}</p>`,
+                     <p>${safeMessage.replace(/\n/g, '<br/>')}</p>`,
             }
 
             await transporter.sendMail(mailOptions)
